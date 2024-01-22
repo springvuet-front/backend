@@ -22,12 +22,11 @@ public class JoinDto {
     private String nickname;
 
     //dto -> entity
-    public User toEntity(String encodedPassword) {
+    public User toEntity() {
         return User.builder()
                 .email(this.email)
-                .userPw(encodedPassword)
+                .userPw(this.userPw)
                 .nickname(this.nickname)
-                .role(UserRole.USER)
                 .build();
     }
 }
