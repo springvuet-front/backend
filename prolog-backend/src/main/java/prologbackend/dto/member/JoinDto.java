@@ -1,11 +1,10 @@
-package prologbackend.dto.user;
+package prologbackend.dto.member;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import prologbackend.domain.user.User;
-import prologbackend.domain.user.UserRole;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import prologbackend.domain.user.Member;
 
 @Getter
 @Setter
@@ -22,11 +21,12 @@ public class JoinDto {
     private String nickname;
 
     //dto -> entity
-    public User toEntity() {
-        return User.builder()
+    public Member toEntity() {
+        return Member.builder()
                 .email(this.email)
                 .userPw(this.userPw)
                 .nickname(this.nickname)
                 .build();
     }
+
 }

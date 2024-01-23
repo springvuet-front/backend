@@ -1,8 +1,9 @@
 package prologbackend.domain.user;
 
-import jakarta.persistence.*;
+
 import lombok.*;
 
+import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
@@ -12,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-public class User {
+public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_uuid", columnDefinition = "BINARY(16)")
@@ -29,10 +30,10 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private UserRole role;
+    private MemberRole role;
 
     @Builder
-    public User(String email, String userPw, String nickname, UserRole role) {
+    public Member(String email, String userPw, String nickname, MemberRole role) {
         this.email = email;
         this.userPw = userPw;
         this.nickname = nickname;

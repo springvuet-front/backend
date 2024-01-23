@@ -1,5 +1,5 @@
 package prologbackend.domain.user;
 
-public enum UserRole {
+public enum MemberRole {
     USER, ADMIN;
 }
