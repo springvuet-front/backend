@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import prologbackend.domain.user.Member;
@@ -13,8 +14,10 @@ import prologbackend.domain.user.MemberRole;
 import prologbackend.dto.TokenDto;
 import prologbackend.dto.member.JoinDto;
 import prologbackend.dto.member.LoginDto;
+import prologbackend.dto.member.MemberInfoDto;
 import prologbackend.jwt.TokenProvider;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 @Service
@@ -65,6 +68,21 @@ public class MemberServiceImpl implements MemberService {
 
         return tokenProvider.generateTokenDto(authentication);
     }
+
+    //member 정보 확인
+    @Override
+    public MemberInfoDto findMemberInfo(HttpServletRequest request) {
+        String token = request.getHeader("Authorization").substring(7); // "Bearer " 제거
+        Authentication authentication = tokenProvider.getAuthentication(token);
+        String email = authentication.getName();
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+
+        return new MemberInfoDto(member);
+
+    }
+
 
 
 

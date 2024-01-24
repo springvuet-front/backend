@@ -6,6 +6,9 @@ import prologbackend.domain.user.Member;
 import prologbackend.dto.TokenDto;
 import prologbackend.dto.member.JoinDto;
 import prologbackend.dto.member.LoginDto;
+import prologbackend.dto.member.MemberInfoDto;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Lazy
 public interface MemberService {
@@ -17,4 +20,7 @@ public interface MemberService {
 
     //로그인
     TokenDto login(LoginDto loginDto);
+
+    //유저정보
+    MemberInfoDto findMemberInfo(HttpServletRequest request);
 }
