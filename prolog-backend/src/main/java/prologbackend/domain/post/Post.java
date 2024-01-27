@@ -40,12 +40,18 @@ public class Post {
 
     @CreationTimestamp
     @Column(name = "create_at")
-    private LocalDateTime createAt;
+    private LocalDateTime createAt = LocalDateTime.now();
 
     @UpdateTimestamp
     @Column(name = "update_at")
-    private LocalDateTime updateAt;
+    private LocalDateTime updateAt = LocalDateTime.now();
 
 
+    public void update(String postTitle, String postCategory, String postStatus, String postContent) {
+        this.postTitle = postTitle;
+        this.postCategory = postCategory;
+        this.postStatus = postStatus;
+        this.postContent = postContent;
+    }
 
 }

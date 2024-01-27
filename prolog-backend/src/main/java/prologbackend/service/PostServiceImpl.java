@@ -9,6 +9,8 @@ import prologbackend.domain.member.MemberRepository;
 import prologbackend.domain.post.Post;
 import prologbackend.domain.post.PostRepository;
 import prologbackend.dto.post.PostRequestDto;
+import prologbackend.exception.PostNotFoundException;
+import prologbackend.exception.UnauthorizedException;
 import prologbackend.jwt.TokenProvider;
 
 import java.util.UUID;
@@ -36,6 +38,25 @@ public class PostServiceImpl {
 
         return postRepository.save(newPost);
 
+    }
+
+    //게시글 수정
+    public Post updatePost(UUID postUuid,PostRequestDto postRequestDto, String token) {
+        Authentication authentication = tokenProvider.getAuthentication(token);
+        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+
+        Post updatePost = postRepository.findById(postUuid)
+                .orElseThrow(() -> new PostNotFoundException("Post not found"));
+
+        if (!updatePost.getMember().equals(member)) {
+            throw new UnauthorizedException("You can only modify your own posts");
+        }else{
+            updatePost.update
+                    (postRequestDto.getPostTitle(), postRequestDto.getPostCategory(), postRequestDto.getPostStatus(), postRequestDto.getPostCategory());
+            return postRepository.save(updatePost);
+        }
     }
 
 }

@@ -7,6 +7,8 @@ import prologbackend.domain.post.Post;
 import prologbackend.dto.post.PostRequestDto;
 import prologbackend.service.PostServiceImpl;
 
+import java.util.UUID;
+
 @Lazy
 @RestController
 @RequestMapping("/api")
@@ -21,5 +23,12 @@ public class PostController {
     public ResponseEntity<Post> createPost(@RequestBody PostRequestDto postRequestDto, @RequestHeader("Authorization") String token) {
         Post newPost = postServiceImpl.createPost(postRequestDto, token);
         return ResponseEntity.ok(newPost);
+    }
+
+    @PutMapping("/post/{postUuid}/edit")
+    public ResponseEntity<Post> updatePost
+            (@PathVariable UUID postUuid, @RequestBody PostRequestDto postRequestDto, @RequestHeader("Authorization") String token) {
+        Post updatePost = postServiceImpl.updatePost(postUuid, postRequestDto, token);
+        return ResponseEntity.ok(updatePost);
     }
 }
