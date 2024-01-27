@@ -27,7 +27,7 @@ public class TokenProvider {
 //    private static final Logger log = LoggerFactory.getLogger(TokenProvider.class);
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 300;
     private final Key key;
 
     public TokenProvider(@Value("${jwt.secret}") String secretKey) {
