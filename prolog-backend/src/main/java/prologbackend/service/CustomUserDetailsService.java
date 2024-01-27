@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import prologbackend.domain.user.MemberRepository;
-import prologbackend.domain.user.Member;
+import prologbackend.domain.member.MemberRepository;
+import prologbackend.domain.member.Member;
 
 import java.util.Collections;
 

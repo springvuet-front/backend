@@ -8,9 +8,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import prologbackend.domain.user.Member;
-import prologbackend.domain.user.MemberRepository;
-import prologbackend.domain.user.MemberRole;
+import prologbackend.domain.member.Member;
+import prologbackend.domain.member.MemberRepository;
+import prologbackend.domain.member.MemberRole;
 import prologbackend.dto.TokenDto;
 import prologbackend.dto.member.JoinDto;
 import prologbackend.dto.member.LoginDto;
@@ -72,7 +72,7 @@ public class MemberServiceImpl implements MemberService {
     //member 정보 확인
     @Override
     public MemberInfoDto findMemberInfo(HttpServletRequest request) {
-        String token = request.getHeader("Authorization").substring(7); // "Bearer " 제거
+        String token = request.getHeader("Authorization");
         Authentication authentication = tokenProvider.getAuthentication(token);
         String email = authentication.getName();
 

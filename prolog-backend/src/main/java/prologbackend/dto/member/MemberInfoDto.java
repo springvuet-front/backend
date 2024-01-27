@@ -3,8 +3,8 @@ package prologbackend.dto.member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import prologbackend.domain.user.Member;
-import prologbackend.domain.user.MemberRole;
+import prologbackend.domain.member.Member;
+import prologbackend.domain.member.MemberRole;
 @Getter
 @Setter
 @NoArgsConstructor

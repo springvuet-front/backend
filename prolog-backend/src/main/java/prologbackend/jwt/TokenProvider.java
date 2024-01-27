@@ -65,6 +65,8 @@ public class TokenProvider {
 
     //토큰 복호화
     public Authentication getAuthentication(String accessToken) {
+        accessToken = accessToken.replace("Bearer ", "");
+
         Claims claims = parseClaims(accessToken);
 
         if (claims.get(AUTHORITIES_KEY) == null) {

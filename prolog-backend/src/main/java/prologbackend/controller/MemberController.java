@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import prologbackend.domain.user.Member;
+import prologbackend.domain.member.Member;
 import prologbackend.dto.TokenDto;
 import prologbackend.dto.member.JoinDto;
 import prologbackend.dto.member.LoginDto;

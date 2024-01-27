@@ -1,4 +1,4 @@
-package prologbackend.domain.user;
+package prologbackend.domain.member;
 
 
 import lombok.*;

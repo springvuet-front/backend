@@ -3,8 +3,7 @@ package prologbackend.dto.member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import prologbackend.domain.user.Member;
+import prologbackend.domain.member.Member;
 
 @Getter
 @Setter

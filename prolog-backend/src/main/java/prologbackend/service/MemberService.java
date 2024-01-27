@@ -2,7 +2,7 @@ package prologbackend.service;
 
 
 import org.springframework.context.annotation.Lazy;
-import prologbackend.domain.user.Member;
+import prologbackend.domain.member.Member;
 import prologbackend.dto.TokenDto;
 import prologbackend.dto.member.JoinDto;
 import prologbackend.dto.member.LoginDto;
