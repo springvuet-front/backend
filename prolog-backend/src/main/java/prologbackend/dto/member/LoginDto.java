@@ -11,17 +11,17 @@ import prologbackend.domain.user.Member;
 @NoArgsConstructor
 public class LoginDto {
     private String email;
-    private String userPw;
+    private String memberPw;
 
     public Member toEntity(String encodedPassword) {
         return Member.builder()
                 .email(this.email)
-                .userPw(encodedPassword)
+                .memeberPw(encodedPassword)
                 .build();
 
     }
     public UsernamePasswordAuthenticationToken toAuthentication() {
-        return new UsernamePasswordAuthenticationToken(email, userPw);
+        return new UsernamePasswordAuthenticationToken(email, memberPw);
     }
 
 }

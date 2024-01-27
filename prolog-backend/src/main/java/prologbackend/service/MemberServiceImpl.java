@@ -53,7 +53,7 @@ public class MemberServiceImpl implements MemberService {
         Member newMember =  Member.builder()
                 .email(joinDto.getEmail())
                 .nickname(joinDto.getNickname())
-                .userPw(encoder.encode(joinDto.getUserPw()))
+                .memeberPw(encoder.encode(joinDto.getMemberPw()))
                 .role(MemberRole.USER) // 기본 권한은 USER로 설정
                 .build();
         return memberRepository.save(newMember);
