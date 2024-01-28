@@ -35,10 +35,9 @@ public class PostServiceImpl {
         this.commentRepository = commentRepository;
     }
     //게시글 작성
-    public Post createPost(PostRequestDto postRequestDto, String token) {
+    public Post createPost(PostRequestDto postRequestDto, String email) {
         Post newPost = postRequestDto.toEntity();
-        Authentication authentication = tokenProvider.getAuthentication(token);
-        String email = authentication.getName();
+
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
         newPost.setMember(member);

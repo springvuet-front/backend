@@ -2,6 +2,8 @@ package prologbackend.controller;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import prologbackend.domain.post.Comment;
 import prologbackend.domain.post.Post;
@@ -23,8 +25,10 @@ public class PostController {
 
     //게시글 작성
     @PostMapping("/post/create")
-    public ResponseEntity<Post> createPost(@RequestBody PostRequestDto postRequestDto, @RequestHeader("Authorization") String token) {
-        Post newPost = postServiceImpl.createPost(postRequestDto, token);
+    public ResponseEntity<Post> createPost(@RequestBody PostRequestDto postRequestDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Post newPost = postServiceImpl.createPost(postRequestDto,email);
         return ResponseEntity.ok(newPost);
     }
 
