@@ -31,7 +31,7 @@ public class PostController {
     //게시글 수정
     @PutMapping("/post/{postUuid}/edit")
     public ResponseEntity<Post> updatePost
-            (@PathVariable UUID postUuid, @RequestBody PostRequestDto postRequestDto, @RequestHeader("Authorization") String token) {
+    (@PathVariable UUID postUuid, @RequestBody PostRequestDto postRequestDto, @RequestHeader("Authorization") String token) {
         Post updatePost = postServiceImpl.updatePost(postUuid, postRequestDto, token);
         return ResponseEntity.ok(updatePost);
     }
@@ -42,5 +42,13 @@ public class PostController {
     (@PathVariable UUID postUuid, @RequestBody CommentDto commentDto, @RequestHeader("Authorization") String token) {
         Comment newComment = postServiceImpl.createComment(postUuid, commentDto, token);
         return ResponseEntity.ok(newComment);
+    }
+
+    //댓글 수정
+    @PutMapping("/post/{postUuid}/{commentUuid}/comment/edit")
+    public ResponseEntity<Comment> updateComment
+    (@PathVariable UUID postUuid, @PathVariable UUID commentUuid, @RequestBody CommentDto commentDto, @RequestHeader("Authorization") String token) {
+        Comment updateComment = postServiceImpl.updateComment(commentUuid, commentDto, token);
+        return ResponseEntity.ok(updateComment);
     }
 }

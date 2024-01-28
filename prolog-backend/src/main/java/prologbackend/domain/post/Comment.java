@@ -44,4 +44,8 @@ public class Comment {
     @Column(name = "update_at")
     private LocalDateTime updateAt = LocalDateTime.now();
 
+    public void update(String content) {
+        this.content = content;
+    }
+
 }

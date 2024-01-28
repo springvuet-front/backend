@@ -12,6 +12,7 @@ import prologbackend.domain.post.Post;
 import prologbackend.domain.post.PostRepository;
 import prologbackend.dto.post.CommentDto;
 import prologbackend.dto.post.PostRequestDto;
+import prologbackend.exception.CommentNotFoundException;
 import prologbackend.exception.PostNotFoundException;
 import prologbackend.exception.UnauthorizedException;
 import prologbackend.jwt.TokenProvider;
@@ -85,5 +86,25 @@ public class PostServiceImpl {
 
         return commentRepository.save(newComment);
     }
+
+    //댓글 수정
+    public Comment updateComment(UUID commentUuid, CommentDto commentDto, String token) {
+        Authentication authentication = tokenProvider.getAuthentication(token);
+        String email = authentication.getName();
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+        Comment updateComment = commentRepository.findById(commentUuid)
+                .orElseThrow(() -> new CommentNotFoundException("Comment not found"));
+
+        if (!updateComment.getMember().equals(member)) {
+            throw new UnauthorizedException("You can only modify your own comments");
+        }else{
+            updateComment.update(commentDto.getContent());
+            return commentRepository.save(updateComment);
+        }
+
+    }
+
 }
 
