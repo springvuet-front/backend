@@ -6,8 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prologbackend.domain.member.Member;
 import prologbackend.domain.member.MemberRepository;
+import prologbackend.domain.post.Comment;
+import prologbackend.domain.post.CommentRepository;
 import prologbackend.domain.post.Post;
 import prologbackend.domain.post.PostRepository;
+import prologbackend.dto.post.CommentDto;
 import prologbackend.dto.post.PostRequestDto;
 import prologbackend.exception.PostNotFoundException;
 import prologbackend.exception.UnauthorizedException;
@@ -21,11 +24,14 @@ public class PostServiceImpl {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
+    private final CommentRepository commentRepository;
 
-    public PostServiceImpl(PostRepository postRepository, MemberRepository memberRepository, TokenProvider tokenProvider){
+    public PostServiceImpl
+            (PostRepository postRepository, MemberRepository memberRepository, TokenProvider tokenProvider,CommentRepository commentRepository){
         this.postRepository = postRepository;
         this.memberRepository = memberRepository;
         this.tokenProvider = tokenProvider;
+        this.commentRepository = commentRepository;
     }
     //게시글 작성
     public Post createPost(PostRequestDto postRequestDto, String token) {
@@ -59,5 +65,25 @@ public class PostServiceImpl {
         }
     }
 
+    //게시글 삭제, 조회, 정렬..
+
+    //댓글 작성
+    public Comment createComment(UUID postUuid, CommentDto commentDto, String token) {
+        Comment newComment = commentDto.toEntity();
+
+        Authentication authentication = tokenProvider.getAuthentication(token);
+        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+
+        Post post = postRepository.findById(postUuid)
+                .orElseThrow(() -> new PostNotFoundException("Post not found"));
+
+
+        newComment.setMember(member);
+        newComment.setPost(post);
+
+        return commentRepository.save(newComment);
+    }
 }
 

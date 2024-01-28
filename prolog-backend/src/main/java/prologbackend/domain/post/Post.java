@@ -7,6 +7,8 @@ import prologbackend.domain.member.Member;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -45,6 +47,7 @@ public class Post {
     @UpdateTimestamp
     @Column(name = "update_at")
     private LocalDateTime updateAt = LocalDateTime.now();
+
 
 
     public void update(String postTitle, String postCategory, String postStatus, String postContent) {
