@@ -36,4 +36,12 @@ public class Teampage {
 
     @Column(name = "teampage_status")
     private boolean status;
+
+    public void update(String projectName, String teamName, LocalDateTime start, LocalDateTime end, String github) {
+        this.projectName = projectName;
+        this.teamName = teamName;
+        this.start = start;
+        this.end = end;
+        this.github = github;
+    }
 }

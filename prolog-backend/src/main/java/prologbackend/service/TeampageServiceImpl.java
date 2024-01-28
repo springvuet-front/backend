@@ -12,9 +12,12 @@ import prologbackend.domain.teamrelationship.TeamRelationship;
 import prologbackend.domain.teamrelationship.TeamRelationshipRepository;
 import prologbackend.dto.teampage.InviteDto;
 import prologbackend.dto.teampage.TeamRequestDto;
+import prologbackend.exception.TeamNotFoundException;
+import prologbackend.exception.UnauthorizedException;
 import prologbackend.jwt.TokenProvider;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -54,6 +57,28 @@ public class TeampageServiceImpl {
     }
 
     //팀페이지 수정
+    public Teampage updateTeampage(UUID teampageUuid, TeamRequestDto teamRequestDto, String token) {
+        Authentication authentication = tokenProvider.getAuthentication(token);
+        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+
+        Teampage updateTeampage = teampageRepository.findById(teampageUuid)
+                .orElseThrow(() -> new TeamNotFoundException("Post not found"));
+
+        // 해당 사용자가 팀페이지의 멤버인지 확인
+        List<TeamRelationship> relationships = teamRelationshipRepository.findByTeampage(updateTeampage);
+        boolean isMember = relationships.stream()
+                .anyMatch(relationship -> relationship.getMember().equals(member));
+
+        if (!isMember) {
+            throw new UnauthorizedException("You are not a member of this team");
+        }else{
+            updateTeampage.update
+                    (teamRequestDto.getProjectName(), teamRequestDto.getTeamName(), teamRequestDto.getStart(), teamRequestDto.getEnd(), teamRequestDto.getGithub());
+            return teampageRepository.save(updateTeampage);
+        }
+    }
 
     //팀원 초대
     public void inviteMember(UUID teampageUuid, InviteDto inviteDto, String token) {
@@ -61,7 +86,6 @@ public class TeampageServiceImpl {
         //팀 생성되었는지 검증
         Teampage teampage = teampageRepository.findById(teampageUuid)
                 .orElseThrow(() -> new EntityNotFoundException("Team not found"));
-
 
         //초대하는 사람이 token가지고 있는지 검증
         Authentication authentication = tokenProvider.getAuthentication(token);

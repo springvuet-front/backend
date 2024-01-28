@@ -21,7 +21,7 @@ public class TeamController {
     }
 
     @PostMapping("/mypage/project/create")
-    public ResponseEntity<Teampage> createTeampage(@RequestBody TeamRequestDto request,@RequestHeader("Authorization") String token) {
+    public ResponseEntity<Teampage> createTeampage(@RequestBody TeamRequestDto request, @RequestHeader("Authorization") String token) {
         Teampage newTeampage = teampageServiceImpl.createTeampage(request, token);
         return ResponseEntity.ok(newTeampage);
     }
@@ -31,4 +31,12 @@ public class TeamController {
         teampageServiceImpl.inviteMember(teampageUuid, inviteDto, token);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/teampage/{teampageUuid}/edit")
+    public ResponseEntity<Teampage> updateTeampage
+            (@PathVariable UUID teampageUuid, @RequestBody TeamRequestDto teamRequestDto, @RequestHeader("Authorization") String token) {
+        Teampage updateTeampage = teampageServiceImpl.updateTeampage(teampageUuid, teamRequestDto, token);
+        return ResponseEntity.ok(updateTeampage);
+    }
+
 }
