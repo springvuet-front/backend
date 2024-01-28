@@ -10,8 +10,12 @@ import prologbackend.domain.teampage.Teampage;
 import prologbackend.domain.teampage.TeampageRepository;
 import prologbackend.domain.teamrelationship.TeamRelationship;
 import prologbackend.domain.teamrelationship.TeamRelationshipRepository;
+import prologbackend.dto.teampage.InviteDto;
 import prologbackend.dto.teampage.TeamRequestDto;
 import prologbackend.jwt.TokenProvider;
+
+import javax.persistence.EntityNotFoundException;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -48,6 +52,36 @@ public class TeampageServiceImpl {
 
         return newTeampage;
     }
+
+    //팀페이지 수정
+
+    //팀원 초대
+    public void inviteMember(UUID teampageUuid, InviteDto inviteDto, String token) {
+
+        //팀 생성되었는지 검증
+        Teampage teampage = teampageRepository.findById(teampageUuid)
+                .orElseThrow(() -> new EntityNotFoundException("Team not found"));
+
+
+        //초대하는 사람이 token가지고 있는지 검증
+        Authentication authentication = tokenProvider.getAuthentication(token);
+        String email = authentication.getName();
+        Member inviter = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+
+        for (String nickname : inviteDto.getNicknames()) {
+            Member invitee = memberRepository.findByNickname(nickname)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+            TeamRelationship relationship = new TeamRelationship();
+            relationship.createRelationship(teampage,invitee);
+            teamRelationshipRepository.save(relationship);
+        }
+
+    }
+
+
+
 
 
 }
