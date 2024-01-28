@@ -3,8 +3,10 @@ package prologbackend.controller;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import prologbackend.domain.teampage.Schedule;
 import prologbackend.domain.teampage.Teampage;
 import prologbackend.dto.teampage.InviteDto;
+import prologbackend.dto.teampage.ScheduleDto;
 import prologbackend.dto.teampage.TeamRequestDto;
 import prologbackend.service.TeampageServiceImpl;
 
@@ -34,9 +36,19 @@ public class TeamController {
 
     @PutMapping("/teampage/{teampageUuid}/edit")
     public ResponseEntity<Teampage> updateTeampage
-            (@PathVariable UUID teampageUuid, @RequestBody TeamRequestDto teamRequestDto, @RequestHeader("Authorization") String token) {
+            (@PathVariable UUID teampageUuid, @RequestBody TeamRequestDto teamRequestDto, @RequestHeader("Authorization") String token)
+    {
         Teampage updateTeampage = teampageServiceImpl.updateTeampage(teampageUuid, teamRequestDto, token);
         return ResponseEntity.ok(updateTeampage);
+    }
+
+    //팀 스케줄 생성
+    @PostMapping("/teampage/{teampageUuid}/schedule/create")
+    public ResponseEntity<Schedule> createSchedule
+            (@PathVariable UUID teampageUuid, @RequestBody ScheduleDto scheduleDto, @RequestHeader("Authorization") String token)
+    {
+        Schedule newSchedule = teampageServiceImpl.createSchedule(teampageUuid, scheduleDto, token);
+        return ResponseEntity.ok(newSchedule);
     }
 
 }

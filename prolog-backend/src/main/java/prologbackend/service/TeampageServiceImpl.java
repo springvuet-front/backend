@@ -6,11 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prologbackend.domain.member.Member;
 import prologbackend.domain.member.MemberRepository;
+import prologbackend.domain.teampage.Schedule;
+import prologbackend.domain.teampage.ScheduleRepository;
 import prologbackend.domain.teampage.Teampage;
 import prologbackend.domain.teampage.TeampageRepository;
 import prologbackend.domain.teamrelationship.TeamRelationship;
 import prologbackend.domain.teamrelationship.TeamRelationshipRepository;
 import prologbackend.dto.teampage.InviteDto;
+import prologbackend.dto.teampage.ScheduleDto;
 import prologbackend.dto.teampage.TeamRequestDto;
 import prologbackend.exception.TeamNotFoundException;
 import prologbackend.exception.UnauthorizedException;
@@ -27,13 +30,16 @@ public class TeampageServiceImpl {
     private final MemberRepository memberRepository;
     private final TeampageRepository teampageRepository;
     private final TeamRelationshipRepository teamRelationshipRepository;
+    private final ScheduleRepository scheduleRepository;
     private final TokenProvider tokenProvider;
 
-    public TeampageServiceImpl(MemberRepository memberRepository, TeampageRepository teampageRepository, TeamRelationshipRepository teamRelationshipRepository, TokenProvider tokenProvider) {
+    public TeampageServiceImpl
+            (MemberRepository memberRepository, TeampageRepository teampageRepository, TeamRelationshipRepository teamRelationshipRepository, TokenProvider tokenProvider, ScheduleRepository scheduleRepository) {
         this.memberRepository = memberRepository;
         this.teampageRepository = teampageRepository;
         this.teamRelationshipRepository = teamRelationshipRepository;
         this.tokenProvider = tokenProvider;
+        this.scheduleRepository = scheduleRepository;
     }
 
     //팀페이지 생성 -> 프로젝트명, 팀명, 프로젝트 기간, 깃허브 링크
@@ -73,11 +79,11 @@ public class TeampageServiceImpl {
 
         if (!isMember) {
             throw new UnauthorizedException("You are not a member of this team");
-        }else{
-            updateTeampage.update
-                    (teamRequestDto.getProjectName(), teamRequestDto.getTeamName(), teamRequestDto.getStart(), teamRequestDto.getEnd(), teamRequestDto.getGithub());
-            return teampageRepository.save(updateTeampage);
         }
+        updateTeampage.update
+                    (teamRequestDto.getProjectName(), teamRequestDto.getTeamName(), teamRequestDto.getStart(), teamRequestDto.getEnd(), teamRequestDto.getGithub());
+        return teampageRepository.save(updateTeampage);
+
     }
 
     //팀원 초대
@@ -103,6 +109,36 @@ public class TeampageServiceImpl {
         }
 
     }
+
+    //스케줄 생성
+    public Schedule createSchedule(UUID teampageUuid, ScheduleDto scheduleDto, String token) {
+
+        Schedule newSchedule = scheduleDto.toEntity();
+
+        Authentication authentication = tokenProvider.getAuthentication(token);
+        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+
+        Teampage teampage = teampageRepository.findById(teampageUuid)
+                .orElseThrow(() -> new TeamNotFoundException("Post not found"));
+
+        // 해당 사용자가 팀페이지의 멤버인지 확인
+        List<TeamRelationship> relationships = teamRelationshipRepository.findByTeampage(teampage);
+        boolean isMember = relationships.stream()
+                .anyMatch(relationship -> relationship.getMember().equals(member));
+
+        if (!isMember) {
+            throw new UnauthorizedException("You are not a member of this team");
+        }
+        newSchedule.setTeampage(teampage);
+
+        scheduleRepository.save(newSchedule);
+
+        return newSchedule;
+
+    }
+
 
 
 
