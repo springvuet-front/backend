@@ -28,8 +28,23 @@ public class TeamRelationship {
     @JoinColumn(name = "member_uuid")
     private Member member;
 
+    @Column(name = "team_role")
+    private String teamRole;
+
+    @Column(name = "team_admin")
+    private String teamAdmin;
+
+
     public void createRelationship(Teampage teampage, Member member) {
         this.teampage = teampage;
         this.member = member;
     }
+
+    public void updateRelationship(Teampage teampage, Member member, String teamRole, String teamAdmin) {
+        this.teampage = teampage;
+        this.member = member;
+        this.teamRole = teamRole;
+        this.teamAdmin =teamAdmin;
+    }
+
 }

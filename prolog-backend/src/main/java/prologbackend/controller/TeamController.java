@@ -32,6 +32,7 @@ public class TeamController {
         return ResponseEntity.ok(newTeampage);
     }
 
+    //팀원초대 -> 닉네임, 역할, 권한 입력
     @PostMapping("/teampage/{teampageUuid}/create/invite")
     public ResponseEntity<Void> inviteMember(@PathVariable UUID teampageUuid, @RequestBody InviteDto inviteDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -39,7 +40,15 @@ public class TeamController {
         teampageServiceImpl.inviteMember(teampageUuid, inviteDto, email);
         return ResponseEntity.noContent().build();
     }
+    //팀원 초대 수정
 
+    @PutMapping("/teampage/{teampageUuid}/update/invite")
+    public ResponseEntity<Void> updateMember(@PathVariable UUID teampageUuid, @RequestBody InviteDto inviteDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        teampageServiceImpl.updateMember(teampageUuid, inviteDto, email);
+        return ResponseEntity.noContent().build();
+    }
     @PutMapping("/teampage/{teampageUuid}/edit")
     public ResponseEntity<Teampage> updateTeampage
             (@PathVariable UUID teampageUuid, @RequestBody TeamRequestDto teamRequestDto)

@@ -10,14 +10,13 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class InviteDto {
-
-    private List<String> nicknames;
-
-    public List<String> getNicknames() {
-        return nicknames;
+    @Getter
+    @Setter
+    public static class Invitee {
+        private String nickname;
+        private String role;
+        private String admin;
     }
 
-    public void setNicknames(List<String> nicknames) {
-        this.nicknames = nicknames;
-    }
+    private List<Invitee> invitees;
 }

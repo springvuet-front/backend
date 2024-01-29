@@ -81,6 +81,7 @@ public class TeampageServiceImpl {
     }
 
     //팀원 초대
+    //팀원초대 -> 닉네임, 역할, 권한 입력
     public void inviteMember(UUID teampageUuid, InviteDto inviteDto, String email) {
 
         //팀 생성되었는지 검증
@@ -91,15 +92,47 @@ public class TeampageServiceImpl {
         Member inviter = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
 
-        for (String nickname : inviteDto.getNicknames()) {
-            Member invitee = memberRepository.findByNickname(nickname)
+        for (InviteDto.Invitee inviteeInfo : inviteDto.getInvitees()) {
+            Member invitee = memberRepository.findByNickname(inviteeInfo.getNickname())
                     .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
             TeamRelationship relationship = new TeamRelationship();
-            relationship.createRelationship(teampage,invitee);
+            relationship.updateRelationship(teampage, invitee, inviteeInfo.getRole(), inviteeInfo.getAdmin());
             teamRelationshipRepository.save(relationship);
+
         }
 
+    }
+
+    //팀원 역할 수정
+    public void updateMember(UUID teampageUuid, InviteDto inviteDto, String email) {
+        //팀 생성되었는지 검증
+        Teampage teampage = teampageRepository.findById(teampageUuid)
+                .orElseThrow(() -> new EntityNotFoundException("Team not found"));
+
+        //수정하는 사람이 token가지고 있는지 검증
+        Member updater = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+
+        //수정하는 사람이 팀페이지 사람인지 검증
+        List<TeamRelationship> relationships = teamRelationshipRepository.findByTeampage(teampage);
+        boolean isMember = relationships.stream()
+                .anyMatch(relationship -> relationship.getMember().equals(updater));
+        if (!isMember) {
+            throw new UnauthorizedException("You are not a member of this team");
+        }
+        //팀페이지 사람이라면 팀원 정보 수정 로직 진행
+        for (InviteDto.Invitee inviteeInfo : inviteDto.getInvitees()) {
+            Member invitee = memberRepository.findByNickname(inviteeInfo.getNickname())
+                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+            TeamRelationship relationship = teamRelationshipRepository.findByTeampageAndMember(teampage, invitee)
+                    .orElseThrow(() -> new EntityNotFoundException("They are not a member of this team "));
+
+            relationship.updateRelationship(teampage,invitee,inviteeInfo.getRole(), inviteeInfo.getAdmin());
+            teamRelationshipRepository.save(relationship);
+
+        }
     }
 
     //스케줄 생성
