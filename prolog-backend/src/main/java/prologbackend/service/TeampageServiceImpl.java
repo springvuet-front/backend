@@ -1,6 +1,5 @@
 package prologbackend.service;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +16,6 @@ import prologbackend.dto.teampage.ScheduleDto;
 import prologbackend.dto.teampage.TeamRequestDto;
 import prologbackend.exception.TeamNotFoundException;
 import prologbackend.exception.UnauthorizedException;
-import prologbackend.jwt.TokenProvider;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -31,14 +29,12 @@ public class TeampageServiceImpl {
     private final TeampageRepository teampageRepository;
     private final TeamRelationshipRepository teamRelationshipRepository;
     private final ScheduleRepository scheduleRepository;
-    private final TokenProvider tokenProvider;
 
     public TeampageServiceImpl
-            (MemberRepository memberRepository, TeampageRepository teampageRepository, TeamRelationshipRepository teamRelationshipRepository, TokenProvider tokenProvider, ScheduleRepository scheduleRepository) {
+            (MemberRepository memberRepository, TeampageRepository teampageRepository, TeamRelationshipRepository teamRelationshipRepository, ScheduleRepository scheduleRepository) {
         this.memberRepository = memberRepository;
         this.teampageRepository = teampageRepository;
         this.teamRelationshipRepository = teamRelationshipRepository;
-        this.tokenProvider = tokenProvider;
         this.scheduleRepository = scheduleRepository;
     }
 
@@ -46,11 +42,10 @@ public class TeampageServiceImpl {
     //팀페이지 생성시 teampage table에는 프로젝트명, 팀명, 프로젝트 기간, 깃허브 링크
     //teampageRelation table에는 팀페이지 uuid, user uuid 동시에 올라가도록
 
-    public Teampage createTeampage(TeamRequestDto teamRequestDto, String token) {
+    public Teampage createTeampage(TeamRequestDto teamRequestDto, String email) {
         Teampage newTeampage = teamRequestDto.toEntity();
         TeamRelationship relationship = new TeamRelationship();
-        Authentication authentication = tokenProvider.getAuthentication(token);
-        String email = authentication.getName();
+
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
 
@@ -63,9 +58,8 @@ public class TeampageServiceImpl {
     }
 
     //팀페이지 수정
-    public Teampage updateTeampage(UUID teampageUuid, TeamRequestDto teamRequestDto, String token) {
-        Authentication authentication = tokenProvider.getAuthentication(token);
-        String email = authentication.getName();
+    public Teampage updateTeampage(UUID teampageUuid, TeamRequestDto teamRequestDto, String email) {
+
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
 
@@ -87,15 +81,13 @@ public class TeampageServiceImpl {
     }
 
     //팀원 초대
-    public void inviteMember(UUID teampageUuid, InviteDto inviteDto, String token) {
+    public void inviteMember(UUID teampageUuid, InviteDto inviteDto, String email) {
 
         //팀 생성되었는지 검증
         Teampage teampage = teampageRepository.findById(teampageUuid)
                 .orElseThrow(() -> new EntityNotFoundException("Team not found"));
 
         //초대하는 사람이 token가지고 있는지 검증
-        Authentication authentication = tokenProvider.getAuthentication(token);
-        String email = authentication.getName();
         Member inviter = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
 
@@ -111,12 +103,10 @@ public class TeampageServiceImpl {
     }
 
     //스케줄 생성
-    public Schedule createSchedule(UUID teampageUuid, ScheduleDto scheduleDto, String token) {
+    public Schedule createSchedule(UUID teampageUuid, ScheduleDto scheduleDto, String email) {
 
         Schedule newSchedule = scheduleDto.toEntity();
 
-        Authentication authentication = tokenProvider.getAuthentication(token);
-        String email = authentication.getName();
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
 
