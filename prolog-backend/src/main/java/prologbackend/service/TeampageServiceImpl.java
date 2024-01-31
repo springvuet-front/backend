@@ -15,9 +15,7 @@ import prologbackend.dto.mypage.MyTeamResponseDetailDto;
 import prologbackend.dto.mypage.MyTeamResponseDto;
 import prologbackend.dto.mypage.MypageResponseDto;
 import prologbackend.dto.mypage.ScheduleResponseDto;
-import prologbackend.dto.teampage.InviteDto;
-import prologbackend.dto.teampage.ScheduleDto;
-import prologbackend.dto.teampage.TeamRequestDto;
+import prologbackend.dto.teampage.*;
 import prologbackend.exception.TeamNotFoundException;
 import prologbackend.exception.UnauthorizedException;
 
@@ -45,9 +43,6 @@ public class TeampageServiceImpl {
 
     //팀페이지 생성 -> 프로젝트명, 팀명, 프로젝트 기간, 깃허브 링크
     //팀페이지 생성시 teampage table에는 프로젝트명, 팀명, 프로젝트 기간, 깃허브 링크
-    //teampageRelation table에는 팀페이지 uuid, user uuid 동시에 올라가도록
-    //팀페이지 생성시 프로젝트 종료 기간이 지난다면 stastus -> false로 바꾸고 싶은데 어떻게 로직을 짜야 할지?
-
     public Teampage createTeampage(TeamRequestDto teamRequestDto, String email) {
         Teampage newTeampage = teamRequestDto.toEntity();
         TeamRelationship relationship = new TeamRelationship();
@@ -216,6 +211,44 @@ public class TeampageServiceImpl {
         List<ScheduleResponseDto> mySchedules = scheduleRepository.findUpcomingSchedules(memberUuid, now, weekLater);
 
         return new MypageResponseDto(myTeamResponseDto, mySchedules);
+
+    }
+
+    //팀페이지 조회
+    public TeampageResponseDto myTeam(UUID teampageUuid, String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+
+        Teampage teampage = teampageRepository.findById(teampageUuid)
+                .orElseThrow(() -> new TeamNotFoundException("Post not found"));
+
+        // 해당 사용자가 팀페이지의 멤버인지 확인
+        List<TeamRelationship> relationships = teamRelationshipRepository.findByTeampage(teampage);
+        boolean isMember = relationships.stream()
+                .anyMatch(relationship -> relationship.getMember().equals(member));
+
+        if (!isMember) {
+            throw new UnauthorizedException("You are not a member of this team");
+        }
+
+        //team members -> memberuuid 리스트에, teampageuuid는 1개
+        List<TeamMembersDto> members = teamRelationshipRepository.findTeamMembers(teampageUuid);
+        //team schedules
+            //현재 ~ 7일 (임박 일정)
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime weekLater = now.plusDays(7);
+        LocalDateTime firstDay = now.withDayOfMonth(1).toLocalDate().atStartOfDay(); // 이 달의 첫 날
+        LocalDateTime lastDay = now.withDayOfMonth(now.toLocalDate().lengthOfMonth());// 이 달의 마지막 날
+
+        List<TeamScheduleDetailDto> keySchedules = scheduleRepository.findKeySchedules(teampageUuid,now,weekLater);
+            //해당하는 달의 일정
+        List<TeamScheduleDetailDto> monthSchedules = scheduleRepository.findMonthSchedules(teampageUuid,firstDay,lastDay);
+
+        TeamScheduleDto teamScheduleDto = new TeamScheduleDto(keySchedules, monthSchedules);
+        //team infomation
+        TeampageDetailResponseDto teampageDetailResponseDto = teampageRepository.findTeampageBy(teampageUuid);
+
+        return new TeampageResponseDto(members, teamScheduleDto, teampageDetailResponseDto);
 
     }
 

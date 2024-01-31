@@ -2,10 +2,12 @@ package prologbackend.domain.teamrelationship;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import prologbackend.domain.member.Member;
 import prologbackend.domain.teampage.Teampage;
 import prologbackend.dto.mypage.MyTeamResponseDetailDto;
+import prologbackend.dto.teampage.TeamMembersDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,4 +38,11 @@ public interface TeamRelationshipRepository extends JpaRepository<TeamRelationsh
             "WHERE tr.member.memberUuid = :memberUuid " +
             "ORDER BY t.end ASC")
     List<MyTeamResponseDetailDto> findTeampages(UUID memberUuid);
+
+    //팀페이지에 해당하는 Members 리스트 출력
+    @Query("SELECT new prologbackend.dto.teampage.TeamMembersDto(m.nickname, tr.teamRole) " +
+            "FROM TeamRelationship tr JOIN tr.member m " +
+            "WHERE tr.teampage.teampageUuid = :teampageUuid " +
+            "ORDER BY m.nickname ASC ")
+    List<TeamMembersDto> findTeamMembers(@Param("teampageUuid") UUID teampageUuid);
 }
