@@ -11,6 +11,10 @@ import prologbackend.domain.teampage.Teampage;
 import prologbackend.domain.teampage.TeampageRepository;
 import prologbackend.domain.teamrelationship.TeamRelationship;
 import prologbackend.domain.teamrelationship.TeamRelationshipRepository;
+import prologbackend.dto.mypage.MyTeamResponseDetailDto;
+import prologbackend.dto.mypage.MyTeamResponseDto;
+import prologbackend.dto.mypage.MypageResponseDto;
+import prologbackend.dto.mypage.ScheduleResponseDto;
 import prologbackend.dto.teampage.InviteDto;
 import prologbackend.dto.teampage.ScheduleDto;
 import prologbackend.dto.teampage.TeamRequestDto;
@@ -18,6 +22,7 @@ import prologbackend.exception.TeamNotFoundException;
 import prologbackend.exception.UnauthorizedException;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,6 +46,7 @@ public class TeampageServiceImpl {
     //팀페이지 생성 -> 프로젝트명, 팀명, 프로젝트 기간, 깃허브 링크
     //팀페이지 생성시 teampage table에는 프로젝트명, 팀명, 프로젝트 기간, 깃허브 링크
     //teampageRelation table에는 팀페이지 uuid, user uuid 동시에 올라가도록
+    //팀페이지 생성시 프로젝트 종료 기간이 지난다면 stastus -> false로 바꾸고 싶은데 어떻게 로직을 짜야 할지?
 
     public Teampage createTeampage(TeamRequestDto teamRequestDto, String email) {
         Teampage newTeampage = teamRequestDto.toEntity();
@@ -75,7 +81,7 @@ public class TeampageServiceImpl {
             throw new UnauthorizedException("You are not a member of this team");
         }
         updateTeampage.update
-                    (teamRequestDto.getProjectName(), teamRequestDto.getTeamName(), teamRequestDto.getStart(), teamRequestDto.getEnd(), teamRequestDto.getGithub());
+                    (teamRequestDto.getProjectName(), teamRequestDto.getTeamName(), teamRequestDto.getStart(), teamRequestDto.getEnd(), teamRequestDto.getGithub(),teamRequestDto.getTeamPosition());
         return teampageRepository.save(updateTeampage);
 
     }
@@ -162,8 +168,56 @@ public class TeampageServiceImpl {
 
     }
 
+    //마이페이지 조회 -> 마감 임박 일정(7일 전) -> 전체 조회
 
 
+    //모든 프로젝트 조회(projectname, teamname, start,end,teamrole추가(웹,앱)/teamrelation-> team_role), 진행 완료된 프로젝트
+    public List<MyTeamResponseDetailDto> MyTeampage(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+
+        UUID memberUuid = member.getMemberUuid();
+
+        List<MyTeamResponseDetailDto> myTeampages = teamRelationshipRepository.findTeampages(memberUuid);
+
+        return myTeampages;
+    }
+
+    //schedule조회
+    public List<ScheduleResponseDto> mySchedule(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+        UUID memberUuid = member.getMemberUuid();
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime weekLater = now.plusDays(7);
+
+        List<ScheduleResponseDto> mySchedules = scheduleRepository.findUpcomingSchedules(memberUuid, now, weekLater);
+
+        return mySchedules;
+    }
+
+    //모든 프로젝트 + schedule 조회
+    public MypageResponseDto myPage(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+        UUID memberUuid = member.getMemberUuid();
+
+        //진행 중인 프로젝트
+        List<MyTeamResponseDetailDto> currentTeams = teamRelationshipRepository.findCurrentTeampages(memberUuid);
+        //완료된 프로젝트
+        List<MyTeamResponseDetailDto> completedTeams = teamRelationshipRepository.findCompletedTeampages(memberUuid);
+
+        MyTeamResponseDto myTeamResponseDto = new MyTeamResponseDto(currentTeams, completedTeams);
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime weekLater = now.plusDays(7);
+
+        List<ScheduleResponseDto> mySchedules = scheduleRepository.findUpcomingSchedules(memberUuid, now, weekLater);
+
+        return new MypageResponseDto(myTeamResponseDto, mySchedules);
+
+    }
 
 
 

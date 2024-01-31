@@ -1,9 +1,11 @@
 package prologbackend.domain.teampage;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -22,7 +24,7 @@ public class Teampage {
     @Column(name = "project_name")
     private String projectName;
 
-    @Column(name = "teamname")
+    @Column(name = "team_name")
     private String teamName;
 
     @Column(name = "teampage_start")
@@ -37,11 +39,20 @@ public class Teampage {
     @Column(name = "teampage_status")
     private boolean status;
 
-    public void update(String projectName, String teamName, LocalDateTime start, LocalDateTime end, String github) {
+    @Column(name = "team_position")
+    private String teamPosition;
+
+    //순환참조 방지 -> Teampage entity를 조회할 때만 Schedule entity들을 가져옴
+    @OneToMany(mappedBy = "teampage")
+    @JsonManagedReference
+    private List<Schedule> schedule;
+
+    public void update(String projectName, String teamName, LocalDateTime start, LocalDateTime end, String github,String teamPosition) {
         this.projectName = projectName;
         this.teamName = teamName;
         this.start = start;
         this.end = end;
         this.github = github;
+        this.teamPosition = teamPosition;
     }
 }

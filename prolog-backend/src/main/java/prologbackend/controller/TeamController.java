@@ -7,11 +7,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import prologbackend.domain.teampage.Schedule;
 import prologbackend.domain.teampage.Teampage;
+import prologbackend.dto.mypage.MyTeamResponseDetailDto;
+import prologbackend.dto.mypage.MypageResponseDto;
+import prologbackend.dto.mypage.ScheduleResponseDto;
 import prologbackend.dto.teampage.InviteDto;
 import prologbackend.dto.teampage.ScheduleDto;
 import prologbackend.dto.teampage.TeamRequestDto;
 import prologbackend.service.TeampageServiceImpl;
 
+import java.util.List;
 import java.util.UUID;
 
 @Lazy
@@ -24,13 +28,7 @@ public class TeamController {
         this.teampageServiceImpl = teampageServiceImpl;
     }
 
-    @PostMapping("/mypage/project/create")
-    public ResponseEntity<Teampage> createTeampage(@RequestBody TeamRequestDto request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        Teampage newTeampage = teampageServiceImpl.createTeampage(request, email);
-        return ResponseEntity.ok(newTeampage);
-    }
+    //팀 페이지 관련
 
     //팀원초대 -> 닉네임, 역할, 권한 입력
     @PostMapping("/teampage/{teampageUuid}/create/invite")
@@ -40,8 +38,8 @@ public class TeamController {
         teampageServiceImpl.inviteMember(teampageUuid, inviteDto, email);
         return ResponseEntity.noContent().build();
     }
-    //팀원 초대 수정
 
+    //팀원 초대 수정
     @PutMapping("/teampage/{teampageUuid}/update/invite")
     public ResponseEntity<Void> updateMember(@PathVariable UUID teampageUuid, @RequestBody InviteDto inviteDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -49,6 +47,8 @@ public class TeamController {
         teampageServiceImpl.updateMember(teampageUuid, inviteDto, email);
         return ResponseEntity.noContent().build();
     }
+
+    //팀 페이지 수정
     @PutMapping("/teampage/{teampageUuid}/edit")
     public ResponseEntity<Teampage> updateTeampage
             (@PathVariable UUID teampageUuid, @RequestBody TeamRequestDto teamRequestDto)
@@ -68,6 +68,50 @@ public class TeamController {
         String email = authentication.getName();
         Schedule newSchedule = teampageServiceImpl.createSchedule(teampageUuid, scheduleDto, email);
         return ResponseEntity.ok(newSchedule);
+    }
+
+    //팀 페이지 조회 ->
+    
+
+    //마이 페이지 관련
+
+    //마이페이지에서 팀 페이지 생성
+    @PostMapping("/mypage/project/create")
+    public ResponseEntity<Teampage> createTeampage(@RequestBody TeamRequestDto request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Teampage newTeampage = teampageServiceImpl.createTeampage(request, email);
+        return ResponseEntity.ok(newTeampage);
+    }
+    //
+
+    //마이페이지 조회
+
+    // 현재 진행중인 프로젝트, 진행 완료된 프로젝트 조회
+    @GetMapping("/mypage/project")
+    public ResponseEntity<List<MyTeamResponseDetailDto>> myTeam() {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            List<MyTeamResponseDetailDto> myTeampages= teampageServiceImpl.MyTeampage(email);
+            return ResponseEntity.ok(myTeampages);
+    }
+
+    //스케줄 조회
+    @GetMapping("/mypage/schedule")
+    public ResponseEntity<List<ScheduleResponseDto>> mySchedule() {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            List<ScheduleResponseDto> mySchedules = teampageServiceImpl.mySchedule(email);
+            return ResponseEntity.ok(mySchedules);
+    }
+
+    //프로젝트 + 스케줄 조회
+    @GetMapping("/mypage")
+    public ResponseEntity<MypageResponseDto> myPage() {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            MypageResponseDto mypageResponseDto = teampageServiceImpl.myPage(email);
+            return ResponseEntity.ok(mypageResponseDto);
     }
 
 }

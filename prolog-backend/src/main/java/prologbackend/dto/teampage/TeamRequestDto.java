@@ -16,6 +16,7 @@ public class TeamRequestDto {
     private LocalDateTime start;
     private LocalDateTime end;
     private String github;
+    private String teamPosition;
 
     public Teampage toEntity() {
         return Teampage.builder()
@@ -25,6 +26,7 @@ public class TeamRequestDto {
                 .end(this.end)
                 .github(this.github)
                 .status(true)
+                .teamPosition(this.teamPosition)
                 .build();
     }
 

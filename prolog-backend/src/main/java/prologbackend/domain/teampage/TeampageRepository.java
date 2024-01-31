@@ -9,3 +9,4 @@ import java.util.UUID;
 public interface TeampageRepository extends JpaRepository<Teampage, UUID> {
 
 }
+
