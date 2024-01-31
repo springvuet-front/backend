@@ -9,12 +9,12 @@ import prologbackend.domain.post.Comment;
 import prologbackend.domain.post.CommentRepository;
 import prologbackend.domain.post.Post;
 import prologbackend.domain.post.PostRepository;
-import prologbackend.dto.post.CommentDto;
-import prologbackend.dto.post.PostRequestDto;
+import prologbackend.dto.post.*;
 import prologbackend.exception.CommentNotFoundException;
 import prologbackend.exception.PostNotFoundException;
 import prologbackend.exception.UnauthorizedException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -60,6 +60,45 @@ public class PostServiceImpl {
     }
 
     //게시글 삭제, 조회, 정렬..
+    //게시글 조회_최신순
+    public List<PostResponseDto> findPostByDesc(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+
+       List<PostResponseDto> postResponseDtos = postRepository.findPostByDesc();
+
+     return postResponseDtos;
+    }
+
+    //
+//    //게시글 조회_status -> 모집중,모집완료
+//    public List<PostListDto> findPostByPostStatus(String postStatus, String email) {
+//        Member member = memberRepository.findByEmail(email)
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+//
+//        List<PostListDto> postListDtos = postRepository.findPostByPostStatus(postStatus);
+//
+//        return postListDtos;
+//    }
+//    //게시글 조회_category -> 앱, 웹
+//    public List<PostListDto> findPostByPostCategory(String postCategory, String email) {
+//        Member member = memberRepository.findByEmail(email)
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+//
+//        List<PostListDto> postListDtos = postRepository.findPostByPostCategory(postCategory);
+//
+//        return postListDtos;
+//    }
+    //특정 게시글 조회 + 댓글 리스트업
+    public PostDto postAndComments(UUID postUuid, String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+
+        PostResponseDto postResponseDto = postRepository.findPost(postUuid);
+        List<CommentResponseDto> commentResponseDtoList = commentRepository.findCommentByPost(postUuid);
+
+        return new PostDto(postResponseDto, commentResponseDtoList);
+    }
 
     //댓글 작성
     public Comment createComment(UUID postUuid, CommentDto commentDto, String email) {
@@ -93,6 +132,7 @@ public class PostServiceImpl {
         }
 
     }
+
 
 }
 
