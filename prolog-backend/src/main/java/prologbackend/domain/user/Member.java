@@ -39,4 +39,7 @@ public class Member {
         this.role = role;
     }
 
+    public Member(UUID userUuid) {
+        this.userUuid = userUuid;
+    }
 }
