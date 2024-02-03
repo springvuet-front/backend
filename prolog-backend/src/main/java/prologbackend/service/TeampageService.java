@@ -26,14 +26,14 @@ import java.util.UUID;
 
 @Service
 @Transactional
-public class TeampageServiceImpl {
+public class TeampageService {
 
     private final MemberRepository memberRepository;
     private final TeampageRepository teampageRepository;
     private final TeamRelationshipRepository teamRelationshipRepository;
     private final ScheduleRepository scheduleRepository;
 
-    public TeampageServiceImpl
+    public TeampageService
             (MemberRepository memberRepository, TeampageRepository teampageRepository, TeamRelationshipRepository teamRelationshipRepository, ScheduleRepository scheduleRepository) {
         this.memberRepository = memberRepository;
         this.teampageRepository = teampageRepository;

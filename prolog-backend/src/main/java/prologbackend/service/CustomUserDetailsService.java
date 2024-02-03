@@ -30,7 +30,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return new User(
                 String.valueOf(member.getEmail()),
-                member.getMemeberPw(),
+                member.getMemberPw(),
                 Collections.singleton(grantedAuthority)
         );
     }

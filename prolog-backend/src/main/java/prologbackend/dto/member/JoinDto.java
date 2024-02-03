@@ -14,7 +14,6 @@ public class JoinDto {
 
 //    @NotBlank(message = "비밀번호를 입력하세요")
     private String memberPw;
-    private String memberPwCheck;
 
 //    @NotBlank(message = "닉네임을 입력하세요")
     private String nickname;
@@ -23,7 +22,7 @@ public class JoinDto {
     public Member toEntity() {
         return Member.builder()
                 .email(this.email)
-                .memeberPw(this.memberPw)
+                .memberPw(this.memberPw)
                 .nickname(this.nickname)
                 .build();
     }

@@ -16,7 +16,7 @@ public class LoginDto {
     public Member toEntity(String encodedPassword) {
         return Member.builder()
                 .email(this.email)
-                .memeberPw(encodedPassword)
+                .memberPw(encodedPassword)
                 .build();
 
     }

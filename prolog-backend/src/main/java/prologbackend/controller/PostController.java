@@ -11,7 +11,7 @@ import prologbackend.dto.post.CommentDto;
 import prologbackend.dto.post.PostDto;
 import prologbackend.dto.post.PostResponseDto;
 import prologbackend.dto.post.PostRequestDto;
-import prologbackend.service.PostServiceImpl;
+import prologbackend.service.PostService;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,10 +20,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api")
 public class PostController {
-    private final PostServiceImpl postServiceImpl;
+    private final PostService postService;
 
-    public PostController(PostServiceImpl postServiceImpl) {
-        this.postServiceImpl = postServiceImpl;
+    public PostController(PostService postService) {
+        this.postService = postService;
     }
 
     //게시글 작성
@@ -31,7 +31,7 @@ public class PostController {
     public ResponseEntity<Post> createPost(@RequestBody PostRequestDto postRequestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        Post newPost = postServiceImpl.createPost(postRequestDto, email);
+        Post newPost = postService.createPost(postRequestDto, email);
         return ResponseEntity.ok(newPost);
     }
 
@@ -41,7 +41,7 @@ public class PostController {
     (@PathVariable UUID postUuid, @RequestBody PostRequestDto postRequestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        Post updatePost = postServiceImpl.updatePost(postUuid, postRequestDto, email);
+        Post updatePost = postService.updatePost(postUuid, postRequestDto, email);
         return ResponseEntity.ok(updatePost);
     }
 
@@ -50,7 +50,7 @@ public class PostController {
     public ResponseEntity<List<PostResponseDto>> findPostByDesc() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        List<PostResponseDto> postResponseDtos = postServiceImpl.findPostByDesc(email);
+        List<PostResponseDto> postResponseDtos = postService.findPostByDesc(email);
         return ResponseEntity.ok(postResponseDtos);
     }
 
@@ -76,7 +76,7 @@ public class PostController {
     public ResponseEntity<PostDto> postAndComments(@PathVariable UUID postUuid) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        PostDto postDto = postServiceImpl.postAndComments(postUuid, email);
+        PostDto postDto = postService.postAndComments(postUuid, email);
         return ResponseEntity.ok(postDto);
     }
     //댓글 작성
@@ -85,7 +85,7 @@ public class PostController {
     (@PathVariable UUID postUuid, @RequestBody CommentDto commentDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        Comment newComment = postServiceImpl.createComment(postUuid, commentDto, email);
+        Comment newComment = postService.createComment(postUuid, commentDto, email);
         return ResponseEntity.ok(newComment);
     }
 
@@ -96,7 +96,7 @@ public class PostController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
-        Comment updateComment = postServiceImpl.updateComment(commentUuid, commentDto, email);
+        Comment updateComment = postService.updateComment(commentUuid, commentDto, email);
         return ResponseEntity.ok(updateComment);
     }
 }

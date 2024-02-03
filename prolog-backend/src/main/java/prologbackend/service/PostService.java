@@ -19,12 +19,12 @@ import java.util.UUID;
 
 @Service
 @Transactional
-public class PostServiceImpl {
+public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
 
-    public PostServiceImpl
+    public PostService
             (PostRepository postRepository, MemberRepository memberRepository,CommentRepository commentRepository){
         this.postRepository = postRepository;
         this.memberRepository = memberRepository;
