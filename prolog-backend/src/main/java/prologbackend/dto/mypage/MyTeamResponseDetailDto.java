@@ -3,6 +3,7 @@ package prologbackend.dto.mypage;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 public class MyTeamResponseDetailDto {
@@ -21,6 +22,20 @@ public class MyTeamResponseDetailDto {
         this.teamName = teamName;
         this.start = start;
         this.end = end;
+    }
+
+    public String getStart() {
+        if (start == null) {
+            return null;
+        }
+        return start.format(DateTimeFormatter.ISO_DATE_TIME);
+    }
+
+    public String getEnd() {
+        if (end == null) {
+            return null;
+        }
+        return end.format(DateTimeFormatter.ISO_DATE_TIME);
     }
 
 }

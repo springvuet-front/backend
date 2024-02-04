@@ -21,6 +21,7 @@ import prologbackend.exception.UnauthorizedException;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -246,7 +247,12 @@ public class TeampageService {
 
         TeamScheduleDto teamScheduleDto = new TeamScheduleDto(keySchedules, monthSchedules);
         //team infomation
+
         TeampageDetailResponseDto teampageDetailResponseDto = teampageRepository.findTeampageBy(teampageUuid);
+
+        long remainingDays = ChronoUnit.DAYS.between(LocalDateTime.now(), teampage.getEnd());
+
+        teampageDetailResponseDto.setRemainingDays(remainingDays);
 
         return new TeampageResponseDto(members, teamScheduleDto, teampageDetailResponseDto);
 

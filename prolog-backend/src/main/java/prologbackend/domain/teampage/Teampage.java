@@ -42,6 +42,7 @@ public class Teampage {
     @Column(name = "team_position")
     private String teamPosition;
 
+
     //순환참조 방지 -> Teampage entity를 조회할 때만 Schedule entity들을 가져옴
     @OneToMany(mappedBy = "teampage")
     @JsonManagedReference
