@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface PostRepository extends JpaRepository<Post, UUID> {
     //게시글 작성 날짜 순 정렬
-    @Query("SELECT new prologbackend.dto.post.PostResponseDto(m.nickname,p.postCategory,p.postStatus,p.postTitle,p.postContent,p.createAt) " +
+    @Query("SELECT new prologbackend.dto.post.PostResponseDto(m.nickname,p.postCategory,p.postStatus,p.postTitle,p.postContent,p.createAt,p.postUuid) " +
             "FROM Post p JOIN p.member m " +
             "ORDER BY p.createAt DESC ")
     List<PostResponseDto> findPostByDesc();
@@ -30,7 +30,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 //    List<PostListDto> findPostByPostStatus(@Param("postStatus") String postStatus);
 
     //게시글 + 게시글에 해당하는 댓글
-    @Query("SELECT new prologbackend.dto.post.PostResponseDto(m.nickname,p.postCategory,p.postStatus,p.postTitle,p.postContent,p.createAt) " +
+    @Query("SELECT new prologbackend.dto.post.PostResponseDto(m.nickname,p.postCategory,p.postStatus,p.postTitle,p.postContent,p.createAt,p.postUuid) " +
             "FROM Post p JOIN p.member m " +
             "WHERE p.postUuid = :postUuid ")
     PostResponseDto findPost(@Param("postUuid") UUID PostUuid);
