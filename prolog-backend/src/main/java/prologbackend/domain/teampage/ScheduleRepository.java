@@ -22,13 +22,13 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
     List<ScheduleResponseDto> findUpcomingSchedules(@Param("memberUuid") UUID memberUuid, @Param("now") LocalDateTime now, @Param("weekLater") LocalDateTime weekLater);
 
     //team에 해당하는 schedule조회 -> key schedules
-    @Query("SELECT new prologbackend.dto.teampage.TeamScheduleDetailDto(s.scheduleContent,s.scheduleEnd) " +
+    @Query("SELECT new prologbackend.dto.teampage.TeamScheduleDetailDto(s.scheduleContent,s.scheduleEnd, s.scheduleUuid) " +
             "FROM Teampage t JOIN t.schedule s " +
             "WHERE t.teampageUuid = :teampageUuid AND s.scheduleEnd between :now and :weekLater " +
             "ORDER BY s.scheduleEnd ASC")
     List<TeamScheduleDetailDto> findKeySchedules(@Param("teampageUuid") UUID teampageUuid, @Param("now") LocalDateTime now, @Param("weekLater") LocalDateTime weekLater);
     //team에 해당하는 schedule 조회 -> month schedles
-    @Query("SELECT new prologbackend.dto.teampage.TeamScheduleDetailDto(s.scheduleContent,s.scheduleStart,s.scheduleEnd) " +
+    @Query("SELECT new prologbackend.dto.teampage.TeamScheduleDetailDto(s.scheduleContent,s.scheduleStart,s.scheduleEnd, s.scheduleUuid) " +
             "FROM Teampage t JOIN t.schedule s " +
             "WHERE t.teampageUuid = :teampageUuid AND s.scheduleEnd between :now and :weekLater " +
             "ORDER BY s.scheduleEnd ASC")
