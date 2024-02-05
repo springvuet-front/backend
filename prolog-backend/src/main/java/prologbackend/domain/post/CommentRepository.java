@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, UUID> {
 
-    @Query("SELECT new prologbackend.dto.post.CommentResponseDto(m.nickname,c.content,c.createAt)" +
+    @Query("SELECT new prologbackend.dto.post.CommentResponseDto(m.nickname,c.content,c.createAt,c.commentUuid)" +
             "FROM Comment c JOIN c.post p JOIN  c.member m " +
             "WHERE p.postUuid = :postUuid " +
             "ORDER BY c.createAt ASC ")
