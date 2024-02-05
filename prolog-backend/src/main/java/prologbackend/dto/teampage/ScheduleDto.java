@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import prologbackend.domain.teampage.Schedule;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -12,14 +13,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ScheduleDto {
     private String scheduleContent;
-    private LocalDateTime scheduleStart;
-    private LocalDateTime scheduleEnd;
+    private String scheduleStart;
+    private String scheduleEnd;
 
     public Schedule toEntity() {
+        LocalDate startDate = LocalDate.parse(this.scheduleStart);
+        LocalDate endDate = LocalDate.parse(this.scheduleEnd);
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atStartOfDay();
+
         return Schedule.builder()
                 .scheduleContent(this.scheduleContent)
-                .scheduleStart(this.scheduleStart)
-                .scheduleEnd(this.scheduleEnd)
+                .scheduleStart(startDateTime)
+                .scheduleEnd(endDateTime)
                 .build();
     }
 }

@@ -40,7 +40,7 @@ public interface TeamRelationshipRepository extends JpaRepository<TeamRelationsh
     List<MyTeamResponseDetailDto> findTeampages(UUID memberUuid);
 
     //팀페이지에 해당하는 Members 리스트 출력
-    @Query("SELECT new prologbackend.dto.teampage.TeamMembersDto(m.nickname, tr.teamRole) " +
+    @Query("SELECT new prologbackend.dto.teampage.TeamMembersDto(m.nickname, tr.teamRole,tr.teamAdmin) " +
             "FROM TeamRelationship tr JOIN tr.member m " +
             "WHERE tr.teampage.teampageUuid = :teampageUuid " +
             "ORDER BY m.nickname ASC ")

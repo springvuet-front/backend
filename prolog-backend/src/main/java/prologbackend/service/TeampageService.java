@@ -16,6 +16,7 @@ import prologbackend.dto.mypage.MyTeamResponseDto;
 import prologbackend.dto.mypage.MypageResponseDto;
 import prologbackend.dto.mypage.ScheduleResponseDto;
 import prologbackend.dto.teampage.*;
+import prologbackend.exception.NoChangeException;
 import prologbackend.exception.TeamNotFoundException;
 import prologbackend.exception.UnauthorizedException;
 
@@ -68,6 +69,15 @@ public class TeampageService {
         Teampage updateTeampage = teampageRepository.findById(teampageUuid)
                 .orElseThrow(() -> new TeamNotFoundException("Post not found"));
 
+        // 변경 사항이 없는지 확인합니다.
+        if (updateTeampage.getProjectName().equals(teamRequestDto.getProjectName())
+                && updateTeampage.getTeamName().equals(teamRequestDto.getTeamName())
+                && updateTeampage.getStart().equals(teamRequestDto.getStart())
+                && updateTeampage.getEnd().equals(teamRequestDto.getEnd())
+                && updateTeampage.getGithub().equals(teamRequestDto.getGithub())) {
+            throw new NoChangeException("No changes were made");
+        }
+
         // 해당 사용자가 팀페이지의 멤버인지 확인
         List<TeamRelationship> relationships = teamRelationshipRepository.findByTeampage(updateTeampage);
         boolean isMember = relationships.stream()
@@ -77,7 +87,7 @@ public class TeampageService {
             throw new UnauthorizedException("You are not a member of this team");
         }
         updateTeampage.update
-                    (teamRequestDto.getProjectName(), teamRequestDto.getTeamName(), teamRequestDto.getStart(), teamRequestDto.getEnd(), teamRequestDto.getGithub(),teamRequestDto.getTeamPosition());
+                    (teamRequestDto.getProjectName(), teamRequestDto.getTeamName(), teamRequestDto.toEntity().getStart(), teamRequestDto.toEntity().getEnd(), teamRequestDto.getGithub(),teamRequestDto.getTeamPosition());
         return teampageRepository.save(updateTeampage);
 
     }
